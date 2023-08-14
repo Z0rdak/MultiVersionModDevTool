@@ -108,8 +108,10 @@ internal class Program
         return ModDirInfos;
     }
 
-    private static void CopyFilesRecursively(string sourcePath, string targetPath)
+    private static void CopyFilesRecursively(ModDirInfo srcModDirInfo, ModDirInfo targetModDirInfo, string relPath)
     {
+        var targetPath = $"{targetModDirInfo.DirInfo.FullName}/{relPath}";
+        var sourcePath = $"{srcModDirInfo.DirInfo.FullName}/{relPath}";
         //Now Create all of the directories
         foreach (string dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
         {
@@ -117,10 +119,25 @@ internal class Program
         }
 
         //Copy all the files & Replaces any files with the same name
+        var targetVersionStr = $"{targetModDirInfo.Name}-{targetModDirInfo.ModLoader}-{targetModDirInfo.Version}";
+        var srcVersionStr = $"{srcModDirInfo.Name}-{srcModDirInfo.ModLoader}-{srcModDirInfo.Version}";
+        
+        Console.WriteLine($"'{srcVersionStr}' => '{targetVersionStr}':");//<= {sourcePath}\n=> {targetPath}:");
         foreach (string source in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
         {
+            FileAttributes attr = File.GetAttributes(source);
             var destPath = source.Replace(sourcePath, targetPath);
-            Console.WriteLine($"Copying file {source} to {destPath}...");
+            if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
+            {
+                var fileInfo = new DirectoryInfo(source);
+                Console.WriteLine($"    {fileInfo.Name} => {destPath}");
+                
+            }
+            if ((attr & FileAttributes.Normal) == FileAttributes.Normal)
+            {
+                var fileInfo = new FileInfo(source);
+                Console.WriteLine($"    {fileInfo.Name} => {destPath}");
+            }
             File.Copy(source, destPath, true);
         }
     }
@@ -135,9 +152,16 @@ internal class Program
             Console.WriteLine($"Unable to find dir '{Environment.DefaultFileSync.SyncSrcDir}'");
             return;
         }
-        Console.WriteLine("Syncing following files/directories: ");
-        Environment.DefaultFileSync.FilesToSync.ForEach(f => Console.WriteLine($"\t-{f}"));
-        Console.WriteLine("Continue? yes(Enter) - no(Esc)");
+        
+        Console.WriteLine($"Syncing following files/directories from '{Environment.DefaultFileSync.SyncSrcDir}': ");
+        Environment.DefaultFileSync.FilesToSync.ForEach(f =>
+        {
+            var srcPath = $"{modDirInfo.DirInfo.FullName}/{f}";
+            var dirMarker = IsDirectory(srcPath) ? "[directory]" : "";
+            Console.WriteLine($"    - {f} {dirMarker}");
+        });
+        
+        Console.WriteLine("Continue? yes [Enter] | no [Esc]\n");
         var input = Console.ReadKey();
         switch (input.Key)
         {
@@ -149,33 +173,36 @@ internal class Program
                     if (File.Exists(srcPath) || Directory.Exists(srcPath))
                     {
                         FileAttributes attr = File.GetAttributes(srcPath);
+                        // copy directory to other mod environments
                         if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
                         {
-                            // copy directory to other mod environments
+                            Console.WriteLine($"Copying contents of '{path}':");
                             ModDirInfos.ForEach(mdi =>
                             {
                                 var dirTargetPath = $"{mdi.DirInfo.FullName}/{path}";
                                 if (srcPath != dirTargetPath)
                                 {
-                                    CopyFilesRecursively(srcPath, dirTargetPath);
+                                    CopyFilesRecursively(modDirInfo, mdi, path);
                                 }
                             });
+                            Console.WriteLine();
                         }
+                        // copy file to other mod environments
                         if ((attr & FileAttributes.Normal) == FileAttributes.Normal)
                         {
-                            // copy file to other mod environments
                             var srcfileInfo = new FileInfo(srcPath);
+                            Console.WriteLine($"Copying file '{srcfileInfo.Name}':");
                             ModDirInfos.ForEach(mdi =>
                             {
                                 var fileTargetPath = $"{mdi.DirInfo.FullName}/{path}";
                                 if (srcPath != fileTargetPath)
                                 {
                                     var targetfileInfo = new FileInfo(fileTargetPath);
-                                    Console.WriteLine(
-                                        $"Copying file {srcfileInfo.Name} to {targetfileInfo.FullName}...");
+                                    Console.WriteLine($"    => {targetfileInfo.FullName}...");
                                     File.Copy(srcPath, fileTargetPath, true);
                                 }
                             });
+                            Console.WriteLine();
                         }
                     }
                     else
@@ -190,6 +217,11 @@ internal class Program
                 Console.WriteLine($"File sync aborted!");
                 break;
         }
+    }
+
+    private static bool IsDirectory(string srcPath)
+    {
+        return (File.GetAttributes(srcPath) & FileAttributes.Directory) == FileAttributes.Directory;
     }
 
     // TODO: Return error info if any
