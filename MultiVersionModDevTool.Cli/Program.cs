@@ -89,25 +89,6 @@ internal class Program
         }
     }
 
-    private static List<ModDirInfo> SearchModDirs(List<DirectoryInfo> directories, string modId)
-    {
-        ModDirInfos = directories
-            .Select(dir => new ModDirInfo(dir.Name.Split('-').ToList(), dir))
-            .Where(dir => dir.Name == modId)
-            .OrderBy(d => d.ModLoader)
-            .ThenBy(d => d.Version)
-            .ToList();
-
-        if (ModDirInfos.Count == 0)
-        {
-            Console.WriteLine($"No directories matching the modId '{modId}' were found.");
-            return new List<ModDirInfo>();
-        }
-
-        Console.WriteLine($"Found {ModDirInfos.Count} directories matching the modId '{modId}':");
-        return ModDirInfos;
-    }
-
     private static void CopyFilesRecursively(ModDirInfo srcModDirInfo, ModDirInfo targetModDirInfo, string relPath)
     {
         var targetPath = $"{targetModDirInfo.DirInfo.FullName}/{relPath}";
@@ -219,11 +200,6 @@ internal class Program
         }
     }
 
-    private static bool IsDirectory(string srcPath)
-    {
-        return (File.GetAttributes(srcPath) & FileAttributes.Directory) == FileAttributes.Directory;
-    }
-
     // TODO: Return error info if any
     public static void BuildJars()
     {
@@ -260,18 +236,6 @@ internal class Program
 
         // TODO: Check build results / process exit codes
         Console.Write("Finished building");
-    }
-
-    /// <summary>
-    ///     Delete existing files and directories within output dir
-    /// </summary>
-    /// <param name="directory"></param>
-    private static void DeleteDirectoryContent(string directory)
-    {
-        var di = new DirectoryInfo(directory);
-        if (!di.Exists) return;
-        di.GetFiles().ToList().ForEach(f => f.Delete());
-        di.GetDirectories().ToList().ForEach(d => d.Delete(true));
     }
 
     private static void CopyJars()
@@ -397,13 +361,20 @@ internal class Program
         return versionIds;
     }
 
-    private static void PrintModDirs(List<ModDirInfo> modDirs)
+    private static bool IsDirectory(string srcPath)
     {
-        var idx = 0;
-        foreach (var d in modDirs)
-        {
-            Console.WriteLine($"({idx}) {d.ModLoader} - {d.Version}");
-            idx++;
-        }
+        return (File.GetAttributes(srcPath) & FileAttributes.Directory) == FileAttributes.Directory;
+    }
+    
+    /// <summary>
+    ///     Delete existing files and directories within output dir
+    /// </summary>
+    /// <param name="directory"></param>
+    private static void DeleteDirectoryContent(string directory)
+    {
+        var di = new DirectoryInfo(directory);
+        if (!di.Exists) return;
+        di.GetFiles().ToList().ForEach(f => f.Delete());
+        di.GetDirectories().ToList().ForEach(d => d.Delete(true));
     }
 }
