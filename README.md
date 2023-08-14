@@ -9,6 +9,7 @@ It features:
 - Building of all jars using gradle
 - Verifying build integrity of the jars (TBD)
 - Extracting the resource pack of the mods (TBD)
+- Commit/Push changes to VCS (TBD)
 - Uploading mods to Modrinth/Curseforge
 
 Its mainly intended for personal usage, but feel free to adapt it and use it for yourself.
