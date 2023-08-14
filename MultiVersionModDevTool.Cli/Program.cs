@@ -17,8 +17,6 @@ namespace de.z0rdak.moddev.util;
 internal class Program
 {
     // TODO: Create Resource Packs and Upload them somewhere
-    // TODO: Generalize file sync (sync dirs, config for syncing)
-    // TODO: bump version
     // TODO: commit and push new version
     private static readonly Dictionary<int, string> CliMenuOptions = new()
     {
@@ -38,8 +36,7 @@ internal class Program
         [-1] = () => System.Environment.Exit(0)
     };
 
-    private static List<ModDirInfo> ModDirInfos = new();
-
+    private static List<ModDirInfo> ModDirInfos { get; set; } = new List<ModDirInfo>();
     private static ModEnvironment Environment { get; set; }
     private static ModInfo ModInfo { get; set; }
     private static Platforms Platforms { get; set; }
