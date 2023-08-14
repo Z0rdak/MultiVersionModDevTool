@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using de.z0rdak.moddev.uploader;
 using de.z0rdak.moddev.util.Models;
 using de.z0rdak.moddev.util.Models.Environment;
 using de.z0rdak.moddev.util.Models.Platforms;
@@ -15,9 +16,6 @@ namespace de.z0rdak.moddev.util;
 
 internal class Program
 {
-    private const string Forge = "forge";
-    private const string Fabric = "fabric";
-
     // TODO: Create Resource Packs and Upload them somewhere
     // TODO: Generalize file sync (sync dirs, config for syncing)
     // TODO: bump version
@@ -261,8 +259,8 @@ internal class Program
     public static async Task UploadFile(ModFileInfo modFile)
     {
         var versionName = $"{modFile.MinecraftVersion}-{modFile.ModVersion}-{modFile.ModLoader}";
-        var curseforgeMetaData = BuildCurseforgeMetaData(modFile, versionName);
-        var modrinthMetaData = BuildModrinthMetaData(modFile, versionName);
+        var curseforgeMetaData = Uploader.BuildCurseforgeMetaData(ModInfo, CurseforgeInfo, modFile, versionName);
+        var modrinthMetaData = Uploader.BuildModrinthMetaData(ModInfo, ModrinthInfo, modFile, versionName);
 
         var uploadTasks = new List<Task<bool>>();
         if (Platforms.UploadTargets.Contains("Modrinth"))
@@ -272,60 +270,6 @@ internal class Program
         await Task.WhenAll(uploadTasks);
     }
 
-    private static CurseforgeMetaData BuildCurseforgeMetaData(ModFileInfo modFile, string versionName)
-    {
-        var curseforgeVersionIds = GetCurseforgeVersionIds(modFile);
-        var curseforgeDependencies = modFile.ModLoader == Fabric
-            ? CurseforgeInfo.Projects.Select(dep => dep.Value).ToList()
-            : new List<Project>();
-        var curseforgeMetaData = new CurseforgeMetaData(
-            versionName,
-            curseforgeVersionIds.ToArray(),
-            ModInfo.Changelog,
-            ModInfo.ReleaseType,
-            curseforgeDependencies);
-        return curseforgeMetaData;
-    }
-
-    private static ModrinthMetaData BuildModrinthMetaData(ModFileInfo modFile, string versionName)
-    {
-        var gameVersions = new[] { modFile.MinecraftVersion };
-        var modloaders = new[] { modFile.ModLoader };
-        var modrinthDependencies = modFile.ModLoader == Fabric
-            ? ModrinthInfo.Dependencies.Select(dep => dep.Value).ToList()
-            : new List<Dependency>();
-
-        var modrinthMetaData = new ModrinthMetaData(
-            versionName, ModrinthInfo.ModId,
-            modFile.ModVersion,
-            gameVersions,
-            ModInfo.ReleaseType,
-            modloaders,
-            ModInfo.Changelog,
-            modFile.FileInfo.FullName,
-            modrinthDependencies);
-        return modrinthMetaData;
-    }
-
-    private static List<int> GetCurseforgeVersionIds(ModFileInfo modFile)
-    {
-        var versionIds = CurseforgeInfo.CommonIds
-            .Select(id => CurseforgeInfo.VersionIds[id])
-            .ToList();
-        versionIds.Add(CurseforgeInfo.VersionIds[modFile.ModLoader]);
-        var idsForVersion = CurseforgeInfo.IdsForVersion[modFile.MinecraftVersion]
-            .Select(ids => CurseforgeInfo.VersionIds[ids]).ToList();
-        versionIds.AddRange(idsForVersion);
-
-        // FIXME: Should not be needed but in some cases both modloaders ids get added 
-        if (modFile.ModLoader == Fabric && versionIds.Contains(CurseforgeInfo.VersionIds[Forge]))
-            versionIds.Remove(CurseforgeInfo.VersionIds[Forge]);
-
-        if (modFile.ModLoader == Forge && versionIds.Contains(CurseforgeInfo.VersionIds[Fabric]))
-            versionIds.Remove(CurseforgeInfo.VersionIds[Fabric]);
-
-        return versionIds;
-    }
     
     private static void CopyFilesRecursively(ModDirInfo srcModDirInfo, ModDirInfo targetModDirInfo, string relPath)
     {
