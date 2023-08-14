@@ -51,20 +51,23 @@ internal class Program
         ModrinthInfo = Platforms.Modrinth;
         CurseforgeInfo = Platforms.Curseforge;
 
-        var directoryInfo = new DirectoryInfo(Environment.Source.SrcDir);
-
-        if (!directoryInfo.Exists)
+        Environment.Source.SrcDirs.ForEach(srcDir =>
         {
-            Console.WriteLine($"Directory '{directoryInfo.FullName}' does not exist.");
-            return;
-        }
+            var directoryInfo = new DirectoryInfo(srcDir);
+            if (!directoryInfo.Exists)
+            {
+                Console.WriteLine($"Directory '{directoryInfo.FullName}' does not exist.");
+                return;
+            }
 
-        ModDirInfos = directoryInfo.GetDirectories()
-            .Where(d => Regex.IsMatch(d.Name, Environment.Source.SrcDirFilterRegex))
-            .Where(d => !Environment.Source.Exclude.Contains(d.Name))
-            .Select(dir => new ModDirInfo(dir.Name.Split('-').ToList(), dir))
-            .Where(dir => dir.Name == ModInfo.ModId)
-            .ToList();
+            var modDirInfos = directoryInfo.GetDirectories()
+                .Where(d => Regex.IsMatch(d.Name, Environment.Source.SrcDirFilterRegex))
+                .Where(d => !Environment.Source.Exclude.Contains(d.Name))
+                .Select(dir => new ModDirInfo(dir.Name.Split('-').ToList(), dir))
+                .Where(dir => dir.Name == ModInfo.ModId)
+                .ToList();
+            ModDirInfos.AddRange(modDirInfos);
+        });
 
         if (ModDirInfos.Count == 0)
         {
