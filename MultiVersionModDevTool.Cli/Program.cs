@@ -89,40 +89,6 @@ internal class Program
         }
     }
 
-    private static void CopyFilesRecursively(ModDirInfo srcModDirInfo, ModDirInfo targetModDirInfo, string relPath)
-    {
-        var targetPath = $"{targetModDirInfo.DirInfo.FullName}/{relPath}";
-        var sourcePath = $"{srcModDirInfo.DirInfo.FullName}/{relPath}";
-        //Now Create all of the directories
-        foreach (string dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
-        {
-            Directory.CreateDirectory(dirPath.Replace(sourcePath, targetPath));
-        }
-
-        //Copy all the files & Replaces any files with the same name
-        var targetVersionStr = $"{targetModDirInfo.Name}-{targetModDirInfo.ModLoader}-{targetModDirInfo.Version}";
-        var srcVersionStr = $"{srcModDirInfo.Name}-{srcModDirInfo.ModLoader}-{srcModDirInfo.Version}";
-        
-        Console.WriteLine($"'{srcVersionStr}' => '{targetVersionStr}':");//<= {sourcePath}\n=> {targetPath}:");
-        foreach (string source in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
-        {
-            FileAttributes attr = File.GetAttributes(source);
-            var destPath = source.Replace(sourcePath, targetPath);
-            if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
-            {
-                var fileInfo = new DirectoryInfo(source);
-                Console.WriteLine($"    {fileInfo.Name} => {destPath}");
-                
-            }
-            if ((attr & FileAttributes.Normal) == FileAttributes.Normal)
-            {
-                var fileInfo = new FileInfo(source);
-                Console.WriteLine($"    {fileInfo.Name} => {destPath}");
-            }
-            File.Copy(source, destPath, true);
-        }
-    }
-
     private static void SyncFiles()
     {
         ModDirInfo? modDirInfo = ModDirInfos.Find(
@@ -360,7 +326,41 @@ internal class Program
 
         return versionIds;
     }
+    
+    private static void CopyFilesRecursively(ModDirInfo srcModDirInfo, ModDirInfo targetModDirInfo, string relPath)
+    {
+        var targetPath = $"{targetModDirInfo.DirInfo.FullName}/{relPath}";
+        var sourcePath = $"{srcModDirInfo.DirInfo.FullName}/{relPath}";
+        //Now Create all of the directories
+        foreach (string dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
+        {
+            Directory.CreateDirectory(dirPath.Replace(sourcePath, targetPath));
+        }
 
+        //Copy all the files & Replaces any files with the same name
+        var targetVersionStr = $"{targetModDirInfo.Name}-{targetModDirInfo.ModLoader}-{targetModDirInfo.Version}";
+        var srcVersionStr = $"{srcModDirInfo.Name}-{srcModDirInfo.ModLoader}-{srcModDirInfo.Version}";
+        
+        Console.WriteLine($"'{srcVersionStr}' => '{targetVersionStr}':");//<= {sourcePath}\n=> {targetPath}:");
+        foreach (string source in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
+        {
+            FileAttributes attr = File.GetAttributes(source);
+            var destPath = source.Replace(sourcePath, targetPath);
+            if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
+            {
+                var fileInfo = new DirectoryInfo(source);
+                Console.WriteLine($"    {fileInfo.Name} => {destPath}");
+                
+            }
+            if ((attr & FileAttributes.Normal) == FileAttributes.Normal)
+            {
+                var fileInfo = new FileInfo(source);
+                Console.WriteLine($"    {fileInfo.Name} => {destPath}");
+            }
+            File.Copy(source, destPath, true);
+        }
+    }
+    
     private static bool IsDirectory(string srcPath)
     {
         return (File.GetAttributes(srcPath) & FileAttributes.Directory) == FileAttributes.Directory;
