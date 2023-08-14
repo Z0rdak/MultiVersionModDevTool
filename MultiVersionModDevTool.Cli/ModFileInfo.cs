@@ -10,7 +10,6 @@ public class ModFileInfo
         Name = tokens[0];
         MinecraftVersion = tokens[1];
         ModVersion = $"{tokens[2]}-{tokens[3]}";
-        ReleaseType = tokens[3].Contains("beta") ? "beta" : tokens[3].Contains("alpha") ? "alpha" : "release";
         ModLoader = tokens[4].Split('.')[0];
         FileInfo = jarFileInfo;
     }
@@ -19,6 +18,5 @@ public class ModFileInfo
     public string ModLoader { get; set; }
     public string MinecraftVersion { get; set; }
     public string ModVersion { get; set; }
-    public string ReleaseType { get; set; }
     public FileInfo FileInfo { get; set; }
 }

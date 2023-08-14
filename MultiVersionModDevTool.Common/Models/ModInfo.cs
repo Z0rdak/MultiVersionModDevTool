@@ -6,4 +6,5 @@ public class ModInfo
     public string ModId { get; set; }
     public string Name { get; set; }
     public string Changelog { get; set; }
+    public string ReleaseType { get; set; }
 }

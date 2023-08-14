@@ -320,7 +320,7 @@ internal class Program
             versionName,
             curseforgeVersionIds.ToArray(),
             ModInfo.Changelog,
-            modFile.ReleaseType,
+            ModInfo.ReleaseType,
             curseforgeDependencies);
         return curseforgeMetaData;
     }
@@ -337,7 +337,7 @@ internal class Program
             versionName, ModrinthInfo.ModId,
             modFile.ModVersion,
             gameVersions,
-            modFile.ReleaseType,
+            ModInfo.ReleaseType,
             modloaders,
             ModInfo.Changelog,
             modFile.FileInfo.FullName,
