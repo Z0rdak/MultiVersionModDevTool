@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <RootNamespace>de.z0rdak.moddev.uploader</RootNamespace>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="RestSharp" Version="110.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\MultiVersionModDevTool.Common\MultiVersionModDevTool.Common.csproj" />
+    </ItemGroup>
+
+</Project>
