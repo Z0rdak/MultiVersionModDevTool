@@ -7,6 +7,8 @@ public class ModrinthInfo : Platform
     public string Token { get; set; }
 
     public string ModId { get; set; }
+    
+    public string UserAgent { get; set; }
 
     public Dictionary<string, Dependency> Dependencies { get; set; }
 }
