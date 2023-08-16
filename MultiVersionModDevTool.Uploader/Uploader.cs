@@ -25,21 +25,22 @@ public static class Uploader
     public static async Task<bool> UploadFileToModrinth(ModrinthInfo modrinthInfo, ModrinthMetaData metaData,
         FileInfo filePath)
     {
-        var metajson = JsonSerializer.Serialize(metaData, new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
-        });
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, "https://api.modrinth.com/v2/version");
-        request.Headers.Add("User-Agent", modrinthInfo.UserAgent);
-        request.Headers.Add("Authorization", modrinthInfo.Token);
-        var content = new MultipartFormDataContent();
-        content.Add(new StringContent(metajson), "data");
-        content.Add(new StreamContent(File.OpenRead(filePath.FullName)), "file", filePath.Name);
-        request.Content = content;
         try
         {
+            var metajson = JsonSerializer.Serialize(metaData, new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+            });
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.modrinth.com/v2/version");
+            request.Headers.Add("User-Agent", modrinthInfo.UserAgent);
+            request.Headers.Add("Authorization", modrinthInfo.Token);
+            var content = new MultipartFormDataContent();
+            content.Add(new StringContent(metajson), "data");
+            content.Add(new StreamContent(File.OpenRead(filePath.FullName)), "file", filePath.Name);
+            request.Content = content;
+
             var response = await client.SendAsync(request);
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -64,23 +65,24 @@ public static class Uploader
     public static async Task<bool> UploadFileToCurse(CurseforgeInfo curseforgeInfo, CurseforgeMetaData metaData,
         FileInfo filePath)
     {
-        var Client = new RestClient("https://minecraft.curseforge.com");
-        var path = $"/api/projects/{curseforgeInfo.ModId}/upload-file";
-
-        var metajson = JsonSerializer.Serialize(metaData, new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
-        });
-        var request = new RestRequest(path, Method.Post)
-            .AddFile("file", filePath.FullName)
-            .AddHeader("Accept", "application/json")
-            .AddHeader("X-Api-Token", curseforgeInfo.Token)
-            .AddParameter("metadata", metajson);
-        request.AlwaysMultipartFormData = true;
-
         try
         {
+            var Client = new RestClient("https://minecraft.curseforge.com");
+            var path = $"/api/projects/{curseforgeInfo.ModId}/upload-file";
+
+            var metajson = JsonSerializer.Serialize(metaData, new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+            });
+            var request = new RestRequest(path, Method.Post)
+                .AddFile("file", filePath.FullName)
+                .AddHeader("Accept", "application/json")
+                .AddHeader("X-Api-Token", curseforgeInfo.Token)
+                .AddParameter("metadata", metajson);
+            request.AlwaysMultipartFormData = true;
+
+
             var response = await Client.PostAsync(request);
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -98,8 +100,9 @@ public static class Uploader
             return false;
         }
     }
-    
-    public static CurseforgeMetaData BuildCurseforgeMetaData(ModInfo modInfo, CurseforgeInfo curseforgeInfo, ModFileInfo modFile, string versionName)
+
+    public static CurseforgeMetaData BuildCurseforgeMetaData(ModInfo modInfo, CurseforgeInfo curseforgeInfo,
+        ModFileInfo modFile, string versionName)
     {
         var curseforgeVersionIds = GetCurseforgeVersionIds(curseforgeInfo, modFile);
         var curseforgeDependencies = modFile.ModLoader == Fabric
@@ -114,7 +117,8 @@ public static class Uploader
         return curseforgeMetaData;
     }
 
-    public static ModrinthMetaData BuildModrinthMetaData(ModInfo modInfo, ModrinthInfo modrinthInfo, ModFileInfo modFile, string versionName)
+    public static ModrinthMetaData BuildModrinthMetaData(ModInfo modInfo, ModrinthInfo modrinthInfo,
+        ModFileInfo modFile, string versionName)
     {
         var gameVersions = new[] { modFile.MinecraftVersion };
         var modloaders = new[] { modFile.ModLoader };
@@ -153,5 +157,4 @@ public static class Uploader
 
         return versionIds;
     }
-    
 }
