@@ -51,15 +51,20 @@ internal class Program
         ModrinthInfo = Platforms.Modrinth;
         CurseforgeInfo = Platforms.Curseforge;
 
+        Console.WriteLine($"Searching source directories..");
+        
         Environment.Source.SrcDirs.ForEach(srcDir =>
         {
+            
             var directoryInfo = new DirectoryInfo(srcDir);
             if (!directoryInfo.Exists)
             {
                 Console.WriteLine($"Directory '{directoryInfo.FullName}' does not exist.");
                 return;
             }
-
+            
+            Console.WriteLine($"Searching '{directoryInfo.FullName}' ...");
+            
             var modDirInfos = directoryInfo.GetDirectories()
                 .Where(d => Regex.IsMatch(d.Name, Environment.Source.SrcDirFilterRegex))
                 .Where(d => !Environment.Source.Exclude.Contains(d.Name))
@@ -67,6 +72,16 @@ internal class Program
                 .Where(dir => dir.Name == ModInfo.ModId)
                 .ToList();
             ModDirInfos.AddRange(modDirInfos);
+            
+            modDirInfos.ForEach(mdi =>
+            {
+                Console.WriteLine($" - found: '{mdi.DirInfo.Name}'");    
+            });
+            if (modDirInfos.Count == 0)
+            {
+                Console.WriteLine($"Did not find any mod directories in '{directoryInfo.FullName}'");
+            }
+            
         });
 
         if (ModDirInfos.Count == 0)
