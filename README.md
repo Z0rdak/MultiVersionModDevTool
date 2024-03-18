@@ -13,3 +13,10 @@ It features:
 - Uploading mods to Modrinth/Curseforge
 
 Its mainly intended for personal usage, but feel free to adapt it and use it for yourself.
+
+# Notes
+
+Workflow notes
+
+## Adding a new version to the config
+

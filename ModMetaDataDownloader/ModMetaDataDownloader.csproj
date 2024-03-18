@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>dotnet-ModMetaDataDownloader-5310EA00-7EC3-49F5-82E8-A549F10B462E</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Coravel" Version="5.0.3"/>
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.59"/>
+        <PackageReference Include="InfluxDB.Client" Version="4.14.0"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0"/>
+        <PackageReference Include="PuppeteerSharp" Version="15.0.0"/>
+        <PackageReference Include="RestSharp" Version="110.2.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
+    </ItemGroup>
+</Project>

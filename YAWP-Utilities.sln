@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultiVersionModDevTool.Cli"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiVersionModDevTool.Common", "MultiVersionModDevTool.Common\MultiVersionModDevTool.Common.csproj", "{4555CE1C-5BA0-4169-995B-621078BA463D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModMetaDataDownloader", "ModMetaDataDownloader\ModMetaDataDownloader.csproj", "{AC2919F9-7FD3-4A7B-A2E0-3E354977380E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4555CE1C-5BA0-4169-995B-621078BA463D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4555CE1C-5BA0-4169-995B-621078BA463D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4555CE1C-5BA0-4169-995B-621078BA463D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC2919F9-7FD3-4A7B-A2E0-3E354977380E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC2919F9-7FD3-4A7B-A2E0-3E354977380E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC2919F9-7FD3-4A7B-A2E0-3E354977380E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC2919F9-7FD3-4A7B-A2E0-3E354977380E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
