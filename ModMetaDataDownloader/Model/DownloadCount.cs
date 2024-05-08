@@ -25,3 +25,11 @@ public class ForgeDownloadCount
     [Column("count")] public int Count { get; set; }
     [Column(IsTimestamp = true)] public DateTimeOffset Timestamp { get; set; }
 }
+
+[Measurement("downloadCount-neoforge")]
+public class NeoForgeDownloadCount
+{
+    [Column("fileId", IsTag = true)] public string FileId { get; set; }
+    [Column("count")] public int Count { get; set; }
+    [Column(IsTimestamp = true)] public DateTimeOffset Timestamp { get; set; }
+}

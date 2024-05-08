@@ -47,7 +47,7 @@ public class WriteModFileInfoInvocable : IInvocable
                     {
                         var downloadCount = new DownloadCount
                             { FileId = e.FileId, Count = e.DownloadCount, Timestamp = requestTime };
-                        writeApi.WriteMeasurement(downloadCount, WritePrecision.S, bucket,
+                        writeApi.WriteMeasurement(downloadCount, WritePrecision.S, bucket.name,
                             _influxDbService.InfluxConfig.Org);
                     });
                 });
@@ -61,7 +61,7 @@ public class WriteModFileInfoInvocable : IInvocable
                         {
                             var downloadCount = new FabricDownloadCount
                                 { FileId = f.FileId, Count = f.DownloadCount, Timestamp = requestTime };
-                            writeApi.WriteMeasurement(downloadCount, WritePrecision.S, bucket,
+                            writeApi.WriteMeasurement(downloadCount, WritePrecision.S, bucket.name,
                                 _influxDbService.InfluxConfig.Org);
                         });
                     });
@@ -75,11 +75,25 @@ public class WriteModFileInfoInvocable : IInvocable
                         {
                             var downloadCount = new ForgeDownloadCount
                                 { FileId = f.FileId, Count = f.DownloadCount, Timestamp = requestTime };
-                            writeApi.WriteMeasurement(downloadCount, WritePrecision.S, bucket,
+                            writeApi.WriteMeasurement(downloadCount, WritePrecision.S, bucket.name,
                                 _influxDbService.InfluxConfig.Org);
                         });
                     });
 
+                fileElements
+                    .Where(f => f.ModLoader.Contains("NeoForge"))
+                    .ToList()
+                    .ForEach(f =>
+                    {
+                        _influxDbService.Write(writeApi =>
+                        {
+                            var downloadCount = new NeoForgeDownloadCount
+                                { FileId = f.FileId, Count = f.DownloadCount, Timestamp = requestTime };
+                            writeApi.WriteMeasurement(downloadCount, WritePrecision.S, bucket.name,
+                                _influxDbService.InfluxConfig.Org);
+                        });
+                    });
+                
                 // write measurement for version-modloader
                 fileElements.ForEach(f =>
                 {
@@ -92,7 +106,7 @@ public class WriteModFileInfoInvocable : IInvocable
                             .Timestamp(requestTime, WritePrecision.S);
                         try
                         {
-                            writeApi.WriteMeasurement(point, WritePrecision.S, bucket,
+                            writeApi.WriteMeasurement(point, WritePrecision.S, bucket.name,
                                 _influxDbService.InfluxConfig.Org);
                         } catch (Exception e)
                         {
