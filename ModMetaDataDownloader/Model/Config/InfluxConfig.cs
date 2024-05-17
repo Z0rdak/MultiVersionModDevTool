@@ -12,6 +12,5 @@ public class InfluxConfig
 public class BucketInfo
 {
     public string name { get; set; }
-    public string measurement { get; set; }
-    public string field { get; set; }
+    public string desc { get; set; }
 }
