@@ -10,10 +10,4 @@ public class FileElement
     public List<string> Versions { get; set; }
     public List<string> ModLoader { get; set; }
     public int DownloadCount { get; set; }
-
-    public override string ToString()
-    {
-        return
-            $"FileId: {FileId}, ReleaseType: {ReleaseType}, Name: {Name}, Size: {Size}, ReleaseDate: {ReleaseDate}, Versions: {string.Join(", ", Versions)}, ModLoader: {string.Join(", ", ModLoader)}, DownloadCount: {DownloadCount}";
-    }
 }

@@ -1,5 +1,10 @@
 ﻿namespace ModMetaDataDownloader;
 
+/**
+ * Type exposed by the curseforge mod API
+ * But since the curseforge mod api is still broken AF, this is not used
+ * E.g. the download count for the mods is just wrong
+ */
 public class CurseModInfo
 {
     public int id { get; set; }
