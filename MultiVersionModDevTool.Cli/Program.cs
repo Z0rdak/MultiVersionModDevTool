@@ -189,15 +189,17 @@ internal class Program
                 DeleteDirectoryContent($"{mdi.DirInfo.FullName}/{Environment.Build.Dir}");
 
             var includeGradleSettings = File.Exists($"{mdi.DirInfo.FullName}/settings.gradle");
-            var gradleSettings = $"{(includeGradleSettings ? "-c settings.gradle" : "")}";
+            // TODO: Test
+            var gradleSettings = $"{(includeGradleSettings ? $"-c \"{mdi.DirInfo.FullName}/settings.gradle\"" : "")}";
             Console.WriteLine($"Building jar for {mdi.ModLoader} - {mdi.Version}");
             var startInfo = new ProcessStartInfo
             {
                 WorkingDirectory = mdi.DirInfo.FullName,
                 WindowStyle = ProcessWindowStyle.Normal,
-                FileName = $"{mdi.DirInfo.FullName}/gradlew",
+                // TODO: Depending on OS choose gradlew or gradlew.bat
+                FileName = $"{mdi.DirInfo.FullName}/gradlew.bat",
                 UseShellExecute = false,
-                Arguments = $"build -b {mdi.DirInfo.FullName}/build.gradle {gradleSettings}"
+                Arguments = $"build -b \"{mdi.DirInfo.FullName}/build.gradle\" {gradleSettings}"
             };
 
             var buildProcess = Process.Start(startInfo);
