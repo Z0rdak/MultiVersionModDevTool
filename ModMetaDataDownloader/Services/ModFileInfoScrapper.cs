@@ -19,15 +19,15 @@ public class ModFileInfoScrapper
     public async Task<Dictionary<string, string>> GetSiteContent()
     {
         var modSiteContent = new Dictionary<string, string>();
-        foreach (var (_, modName) in ScrapConfig.Mods)
+        foreach (var (_, mod) in ScrapConfig.Mods)
         {
             var requestTime = DateTimeOffset.UtcNow.ToUniversalTime();
             var url =
-                $"{ScrapConfig.Host}/{modName.Name}/files/all?page=1&pageSize={modName.PageSize}";
+                $"{ScrapConfig.Host}/{mod.Name}/files/all?page=1&pageSize={mod.PageSize}";
             if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("[{time}] Getting mod download stats for '{modName}' from curse ({url}) ...", requestTime.ToString(), modName.Name, url);
+                _logger.LogInformation("[{time}] Getting mod download stats for '{modName}' (with Id={modId}) from curse ({url}) ...", requestTime.ToString(), mod.Name, mod.ModId, url);
             var modFileListContent = await ScrapSiteContent(url);
-            modSiteContent.Add(modName.Name, modFileListContent);
+            modSiteContent.Add(mod.Name, modFileListContent);
         }
 
         return modSiteContent;
